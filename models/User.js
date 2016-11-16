@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const encryption = require('./../utilities/encryption');
 
 let userSchema = mongoose.Schema(
+
+	//Just a comment
     {
         email: {type: String, required: true, unique: true},
         passwordHash: {type: String, required: true},
