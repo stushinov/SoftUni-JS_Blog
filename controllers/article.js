@@ -81,5 +81,43 @@ module.exports = {
                     res.redirect(`/article/details/${id}`);
                 });
         }
+    },
+
+    deleteGet: function(req, res){
+        let id = req.params.id;
+
+        Article.findById(id).then(article => {
+            res.render('article/delete', article);
+        });
+    },
+
+    deletePost: function(req, res){
+        let id = req.params.id;
+        Article.findOneAndRemove({_id: id}).populate('author').then(article => {
+
+            let author = article.author;
+
+            //Index of articles's id in author's articles.
+            let index = author.articles.indexOf(article.id);
+
+            if(index < 0){
+
+                let errorMsg = 'Article was not found for this author';
+                res.render('article/delete', {error: errorMsg});
+
+            } else {
+
+                //Remove count elements after a given index (inclusive)
+                let count = 1;
+
+                author.articles.splice(index, count);
+
+                author.save().then((user) => {
+                    res.redirect('/');
+                })
+            }
+
+        });
     }
+
 };
