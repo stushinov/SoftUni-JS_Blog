@@ -1,3 +1,5 @@
+//Continue from 4. Edit user registration
+const Role = require('mongoose').model('Role');
 const User = require('mongoose').model('User');
 const encryption = require('./../utilities/encryption');
 
@@ -31,17 +33,51 @@ module.exports = {
                     salt: salt
                 };
 
-                User.create(userObject).then(user => {
-                    req.logIn(user, (err) => {
-                        if (err) {
-                            registerArgs.error = err.message;
-                            res.render('user/register', registerArgs);
-                            return;
-                        }
+                let roles = [];
 
-                        res.redirect('/')
-                    })
-                })
+                Role.findOne({name: 'User'}).then(role => {
+
+                    roles.push(role.id);
+
+                    userObject.roles = roles;
+
+                    User.create(userObject).then(user => {
+                        role.users.push(user);
+
+                        role.save(err =>{
+
+                           if(err){
+                               registerArgs.error = err.message;
+                               res.render('user/register', registerArgs);
+                           } else {
+
+                               req.logIn(user, (err) => {
+
+                                   if(err){
+                                       registerArgs.error = err.message;
+                                       return;
+                                   }
+
+                                   res.redirect('/');
+                               });
+                           }
+
+                        });
+                    });
+                });
+
+
+                // User.create(userObject).then(user => {
+                //     req.logIn(user, (err) => {
+                //         if (err) {
+                //             registerArgs.error = err.message;
+                //             res.render('user/register', registerArgs);
+                //             return;
+                //         }
+                //
+                //         res.redirect('/')
+                //     })
+                // })
             }
         })
     },
