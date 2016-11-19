@@ -46,7 +46,16 @@ module.exports = {
         let id = req.params.id;
 
         Article.findById(id).populate('author').then(article => {
-            res.render('article/details', article)
+
+            if(!req.user){
+                res.render('article/details', {article: article, isUserAuthorized: false});
+                return;
+            }
+            req.user.isInRole('Admin').then(isAdmin => {
+
+                let isUserAuthorized = isAdmin || req.user.isAuthor(article);
+                res.render('article/details', {article: article, isUserAuthorized: isUserAuthorized});
+            })
         });
     },
 
