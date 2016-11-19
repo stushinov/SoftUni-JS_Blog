@@ -103,7 +103,13 @@ module.exports = {
                     return;
                 }
 
-                res.redirect('/');
+                let returnUrl = '/';
+                if(req.session.returnUrl){
+                    returnUrl = req.session.returnUrl;
+                    delete req.session.returnUrl;
+                }
+
+                res.redirect(returnUrl);
             })
         })
     },
