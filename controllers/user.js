@@ -42,7 +42,7 @@ module.exports = {
                     userObject.roles = roles;
 
                     User.create(userObject).then(user => {
-                        role.users.push(user);
+                        role.user.push(user);
 
                         role.save(err =>{
 
